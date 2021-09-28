@@ -12,6 +12,7 @@ import random
 import cv2
 import os
 import glob
+from keras.callbacks import EarlyStopping
 
 # initial parameters
 epochs = 30
@@ -114,13 +115,14 @@ model = build(width=img_dims[0], height=img_dims[1], depth=img_dims[2],
 
 # compile the model
 opt = Adam(lr=lr, decay=lr/epochs)
+early_stopping = EarlyStopping(patience=20)
 model.compile(loss="binary_crossentropy", optimizer=opt, metrics=["accuracy"])
 
 # train the model
 H = model.fit_generator(aug.flow(trainX, trainY, batch_size=batch_size),
                         validation_data=(testX,testY),
                         steps_per_epoch=len(trainX) // batch_size,
-                        epochs=epochs, verbose=1)
+                        epochs=epochs, verbose=1,callbacks=[early_stopping])
 
 # save the model to disk
 model.save('gender_detection.model')
