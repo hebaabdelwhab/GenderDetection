@@ -14,35 +14,36 @@ import os
 import glob
 
 # initial parameters
-epochs = 100
+epochs = 30
 lr = 1e-3
 batch_size = 64
 img_dims = (96,96,3)
 
 data = []
 labels = []
-
 # load image files from the dataset
-image_files = [f for f in glob.glob(r'D:\Gender-Detection-master\Gender-Detection-master\gender_dataset_face' + "/**/*", recursive=True) if not os.path.isdir(f)]
+image_files = [f for f in glob.glob(r'D:\Gender-Detection-master\Gender-Detection\gender_dataset_face' + "/**/*", recursive=True) if not os.path.isdir(f)]
+#print(image_files)
 random.shuffle(image_files)
-
+#renaming
+c = 0
+M = 0
 # converting images to arrays and labelling the categories
 for img in image_files:
-
     image = cv2.imread(img)
-    
     image = cv2.resize(image, (img_dims[0],img_dims[1]))
     image = img_to_array(image)
     data.append(image)
-
     label = img.split(os.path.sep)[-2] # C:\Files\gender_dataset_face\woman\face_1162.jpg
     if label == "woman":
         label = 1
+        cv2.imwrite(r"D:\Gender-Detection-master\Gender-Detection\gender_dataset_face\women\face_W_{}.jpg".format(c), image)  # To rename the images;
+        c = c+1
     else:
         label = 0
-        
+        cv2.imwrite(r"D:\Gender-Detection-master\Gender-Detection\gender_dataset_face\men\face_M_{}.jpg".format(M), image)  # To rename the images;
+        M = M+1
     labels.append([label]) # [[1], [0], [0], ...]
-
 # pre-processing
 data = np.array(data, dtype="float") / 255.0
 labels = np.array(labels)
@@ -50,7 +51,6 @@ labels = np.array(labels)
 # split dataset for training and validation
 (trainX, testX, trainY, testY) = train_test_split(data, labels, test_size=0.2,
                                                   random_state=42)
-
 trainY = to_categorical(trainY, num_classes=2) # [[1, 0], [0, 1], [0, 1], ...]
 testY = to_categorical(testY, num_classes=2)
 
@@ -58,7 +58,6 @@ testY = to_categorical(testY, num_classes=2)
 aug = ImageDataGenerator(rotation_range=25, width_shift_range=0.1,
                          height_shift_range=0.1, shear_range=0.2, zoom_range=0.2,
                          horizontal_flip=True, fill_mode="nearest")
-
 # define model
 def build(width, height, depth, classes):
     model = Sequential()
