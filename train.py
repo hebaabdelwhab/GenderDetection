@@ -50,7 +50,7 @@ labels = np.array(labels)
 
 # split dataset for training and validation
 (trainX, testX, trainY, testY) = train_test_split(data, labels, test_size=0.2,
-                                                  random_state=42)
+                                                  random_state=42,stratify=labels)
 trainY = to_categorical(trainY, num_classes=2) # [[1, 0], [0, 1], [0, 1], ...]
 testY = to_categorical(testY, num_classes=2)
 
