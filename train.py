@@ -15,7 +15,7 @@ import glob
 from keras.callbacks import EarlyStopping
 
 # initial parameters
-epochs = 30
+epochs = 100
 lr = 1e-3
 batch_size = 64
 img_dims = (96,96,3)
